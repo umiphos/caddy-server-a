@@ -1,0 +1,15 @@
+{
+    email {$ACME_EMAIL}
+}
+
+api.precioinbox.com {
+    reverse_proxy backend:8000
+}
+
+turismo.precioinbox.com {
+    handle /api/* {
+        reverse_proxy turismo-backend:8000
+    }
+
+    reverse_proxy turismo-frontend:80
+}
