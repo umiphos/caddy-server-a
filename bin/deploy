@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP="${1:-}"
+
+case "$APP" in
+  turismo)
+    APP_DIR="/opt/apps/turismo"
+    SERVICE_NAME="turismo-backend"
+    HEALTH_URL="https://api-turismo.precioinbox.com/api/health"
+    ;;
+
+  precioinbox)
+    APP_DIR="/opt/apps/precioinbox/backend/shelfy"
+    SERVICE_NAME="backend"
+    HEALTH_URL="https://api.precioinbox.com/docs"
+    ;;
+
+  caddy)
+    APP_DIR="/opt/infra/caddy"
+    SERVICE_NAME="caddy"
+    HEALTH_URL="https://api.precioinbox.com/docs"
+    ;;
+
+  *)
+    echo "Uso: deploy {turismo|precioinbox|caddy}"
+    exit 1
+    ;;
+esac
+
+echo "==> Deploy: $APP"
+cd "$APP_DIR"
+
+echo "==> Actualizando repo"
+git pull
+
+echo "==> Reconstruyendo/levantando servicio"
+docker compose up -d --build "$SERVICE_NAME"
+
+echo "==> Estado"
+docker compose ps
+
+echo "==> Logs recientes"
+docker compose logs "$SERVICE_NAME" --tail=80
+
+echo "==> Healthcheck"
+curl -fsS "$HEALTH_URL" >/dev/null
+
+echo "==> Deploy completado: $APP"
