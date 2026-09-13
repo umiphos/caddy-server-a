@@ -5,7 +5,7 @@ APP="${1:-}"
 
 case "$APP" in
   turismo)
-    APP_DIR="/opt/apps/turismo"
+    APP_DIR="/opt/apps/turismo/backend"
     SERVICE_NAME="turismo-backend"
     HEALTH_URL="https://api-turismo.precioinbox.com/api/health"
     ;;
